@@ -204,7 +204,7 @@ function startListening() {
     includeSpectrogram: true, // in case listen should return result.spectrogram
     probabilityThreshold: 0.10,
     invokeCallbackOnNoiseAndUnknown: false,
-    overlapFactor: 0.95 // probably want between 0.5 and 0.75. More info in README
+    overlapFactor: 0.75 // probably want between 0.5 and 0.75. More info in README
   });
 
 }
