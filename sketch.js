@@ -1,5 +1,5 @@
 wordlist = [
-    ['CUE', ['ck', 'ue']],
+
    ['BARE', ['d', 'ue']],
     ['HUE', ['h', 'air']],
    ['DARE', ['d', 'air']],
