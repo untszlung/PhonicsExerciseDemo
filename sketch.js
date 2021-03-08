@@ -41,6 +41,12 @@ let isCurrentWordFinish = true;
 
 let phonemeIndex = 0;
 
+
+
+  let minPhnoicsRecognitionIteration = 1
+  let overlapFactor =0.8;
+let maxTopKPhonicsResult =6;
+
 async function createModel() {
   const checkpointURL = URL + "model.json"; // model topology
   const metadataURL = URL + "metadata.json"; // model metadata
@@ -145,11 +151,12 @@ function startListening() {
 
           //console.log('sortPhonicsResultList.length: ' + sortPhonicsResultList.length);
 
+          
+          
 
-
-
+          
           for (let i = 0; i < sortPhonicsResultList.length; i++) {
-            if ((sortPhonicsResultList[i][2] >= 5) && ((sortPhonicsResultList[i][0] != 'Background Noise') && (sortPhonicsResultList[i][0] != 'unknown'))) {
+            if ((sortPhonicsResultList[i][2] >= 1) && ((sortPhonicsResultList[i][0] != 'Background Noise') && (sortPhonicsResultList[i][0] != 'unknown'))) {
               // sortPhonicsResults = sortPhonicsResults + `${sortPhonicsResultList[i][0]}(${sortPhonicsResultList[i][1]}%)(${sortPhonicsResultList[i][2]}), `;
               sortTopPhonicsResultList.push([sortPhonicsResultList[i][0], sortPhonicsResultList[i][1], sortPhonicsResultList[i][2]]);
             }
@@ -160,8 +167,8 @@ function startListening() {
           //show finalize result, 
           sortTopPhonicsResults = "";
           let maxTopKPhonicsResultCount = 0;
-          if (sortTopPhonicsResultList.length > 6) {
-            maxTopKPhonicsResultCount = 6;
+          if (sortTopPhonicsResultList.length > maxTopKPhonicsResult) {
+            maxTopKPhonicsResultCount = maxTopKPhonicsResult;
           } else {
             maxTopKPhonicsResultCount = sortTopPhonicsResultList.length;
           }
@@ -212,7 +219,7 @@ function startListening() {
     includeSpectrogram: true, // in case listen should return result.spectrogram
     probabilityThreshold: 0.10,
     invokeCallbackOnNoiseAndUnknown: false,
-    overlapFactor: 0.95 // probably want between 0.5 and 0.75. More info in README
+    overlapFactor: `${overlapFactor}` // probably want between 0.5 and 0.75. More info in README
   });
 
 }
