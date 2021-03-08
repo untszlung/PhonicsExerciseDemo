@@ -1,21 +1,17 @@
 wordlist = [
 
-   ['BARE', ['b', 'ue']],
-    ['HUE', ['h', 'air']],
-   ['DARE', ['d', 'air']],
-   ['CARE', ['ck', 'air']],
-   ['SHARE', ['sh', 'air']],
-   ['SHUT', ['sh', 'u', 't']],
-   ['DISH', ['d', 'i', 'sh']],
-   ['SHIP', ['sh', 'i', 'p']],
-  ['SHEEP', ['sh', 'ee', 'p']],
-    ['SUN', ['s', 'u', 'n']],
-    ['BUS', ['b', 'u', 's']],
   ['BOG', ['b', 'o', 'g']],
   ['DAG', ['d', 'a', 'g']],
   ['BAD', ['b', 'a', 'd']],
   ['DOG', ['d', 'o', 'g']],
-  ['POT', ['p', 'o', 't']]
+  ['POT', ['p', 'o', 't']],
+  ['SHARE', ['sh', 'air']],
+  ['DISH', ['d', 'i', 'sh']],
+  ['SHIP', ['sh', 'i', 'p']],
+  ['SHEEP', ['sh', 'ee', 'p']],
+   ['SHUT', ['sh', 'u', 't']],
+  ['SUN', ['s', 'u', 'n']],
+  ['BUS', ['b', 'u', 's']]
 ];
 
 // 3 speakers training data
@@ -216,7 +212,7 @@ function startListening() {
     includeSpectrogram: true, // in case listen should return result.spectrogram
     probabilityThreshold: 0.10,
     invokeCallbackOnNoiseAndUnknown: false,
-    overlapFactor: 0.9 // probably want between 0.5 and 0.75. More info in README
+    overlapFactor: 0.95 // probably want between 0.5 and 0.75. More info in README
   });
 
 }
@@ -293,7 +289,7 @@ function setup() {
   //Initialise the recognizer
   init();
 
-  createCanvas(400, 400);
+  createCanvas(windowWidth, windowHeight-100);
 
 
   checkbox = createCheckbox('Mic ON/OFF', true);
@@ -306,9 +302,22 @@ function setup() {
   checkbox2 = createCheckbox('Raw Results', false);
   checkbox2.changed(showRawResults);
   isShowRawResults = false;
+  
+  nextWordbutton = createButton('Next word');
+  nextWordbutton.position(windowWidth-100, windowHeight-80);
+  nextWordbutton.mousePressed(changeNextWord);
 }
 
-
+function changeNextWord(){
+    if(1<wordlist.length-currentWordIndex){
+             currentWordIndex++;
+             phonemeIndex=0;
+          }
+          else{
+            currentWordIndex=0;
+            phonemeIndex=0;
+          }
+}
 
 function micONOFF() {
   if (this.checked()) {
@@ -373,28 +382,16 @@ function draw() {
   //
   textSize(80);
  
-   var pos_x = (width - textWidth(wordlist[currentWordIndex][0]))/2;
-   for (let j = 0; j < wordlist[currentWordIndex][0].length; j++) {
-   
-     var w = textWidth(wordlist[currentWordIndex][0][j]);
-      if (j!=phonemeIndex){
-          fill( black );
-          
-      }else{
-          fill( red );
-      }
-      
-       
-      text(  wordlist[currentWordIndex][0][j], pos_x, 100);
-      pos_x += w;
-  }
-  
-  //text(wordlist[0][0], 200, 100);
-   fill( black );
-  textSize(40);
+    var pos_x = (width - textWidth(wordlist[currentWordIndex][0]))/2;
+
+    fill( black );
+  text(wordlist[currentWordIndex][0], pos_x, 100);
 
   
   
+  textSize(40);
+
+  push();
   let wordPhonincs = '';
   for (let i = 0; i < wordlist[currentWordIndex][1].length; i++) {
     wordPhonincs = wordPhonincs + `{${wordlist[currentWordIndex][1][i]}}`;
@@ -402,27 +399,51 @@ function draw() {
       wordPhonincs = wordPhonincs + ' ';
     }
   }
-  pos_x = (width - textWidth(wordPhonincs))/2;
-  text(wordPhonincs, pos_x, 150);
+ 
+  var pos_x = (width - textWidth(wordPhonincs))/2;
+  for (let i = 0; i < wordlist[currentWordIndex][1].length; i++) {
+    
+  
+     var w = textWidth(`{${wordlist[currentWordIndex][1][i]}} `);
+          if (i!=phonemeIndex){
+          fill( black );
+          
+      }else{
+          fill( red );
+      }
+      
+     text( `{${wordlist[currentWordIndex][1][i]}}`, pos_x, 150);
+    pos_x += w;
+  }
+  pop();
+   
+  //pos_x = (width - textWidth(wordPhonincs))/2;
+  //text(wordPhonincs, pos_x, 150);
   
   push();
   textAlign(CENTER);
+  textSize(20);
+
+  text(sortTopPhonicsResults, 10, 190, width-20);
+  
   textSize(12);
 
-  text(sortTopPhonicsResults, 10, 170, width-20);
-  
   if (isShowDigestedResults == true){
     if(sortPhonicsResults != ''){
-      text('<disgested results>', 10, 210, width-20);
-      text(sortPhonicsResults, 10, 225, width-20);
+      text('<disgested results>', 10, 250, width-20);
+      text(sortPhonicsResults, 10, 265, width-20);
     }
   }
   
   if (isShowRawResults == true){
-    text(result_history, 10, 250, width-20);
+    if (result_history!= ''){
+    text('<raw results>', 10, 310, width-20);
+    text(result_history, 10, 335, width-20);
+    }
   }
   pop();
   
+  //check the ending phonics of current word
    if(wordlist[currentWordIndex][1].length==phonemeIndex){
      console.log(`wordlist[currentWordIndex][1].length=${wordlist[currentWordIndex][1].length} phonemeIndex=${phonemeIndex}`);
            console.log(`currentWordIndex: ${currentWordIndex} wordlist.length-1=${wordlist.length-1}`);
